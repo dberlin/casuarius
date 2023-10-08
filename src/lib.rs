@@ -165,6 +165,7 @@ use std::collections::hash_map::Entry;
 
 use crate as casuarius;
 use ordered_float::OrderedFloat;
+use thiserror::Error;
 
 mod operators;
 mod solver_impl;
@@ -629,61 +630,74 @@ impl Row {
 }
 
 /// The possible error conditions that `Solver::commit_edit` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
+#[error("Failure to edit constraint: {0}")]
 pub struct EditConstraintError(&'static str);
 
 /// The possible error conditions that `Solver::add_constraint` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
 pub enum AddConstraintError {
     /// The constraint specified has already been added to the solver.
+    #[error("Duplicate constraint added")]
     DuplicateConstraint,
     /// The constraint is required, but it is unsatisfiable in conjunction with the existing constraints.
+    #[error("Unsatifisfiable constraint added")]
     UnsatisfiableConstraint,
     /// The solver entered an invalid state. If this occurs please report the issue. This variant specifies
     /// additional details as a string.
+    #[error("Internal solver error: {0}")]
     InternalSolverError(&'static str),
 }
 
 /// The possible error conditions that `Solver::remove_constraint` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
 pub enum RemoveConstraintError {
     /// The constraint specified was not already in the solver, so cannot be removed.
+    #[error("Constraint not in solver")]
     UnknownConstraint,
     /// The solver entered an invalid state. If this occurs please report the issue. This variant specifies
     /// additional details as a string.
+    #[error("Internal solver error: {0}")]
     InternalSolverError(&'static str),
 }
 
 /// The possible error conditions that `Solver::add_edit_variable` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
 pub enum AddEditVariableError {
     /// The specified variable is already marked as an edit variable in the solver.
+    #[error("Duplicate edit variable")]
     DuplicateEditVariable,
     /// The specified strength was `REQUIRED`. This is illegal for edit variable strengths.
+    #[error("Edit variables can not be REQUIRED")]
     BadRequiredStrength,
 }
 
 /// The possible error conditions that `Solver::remove_edit_variable` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
 pub enum RemoveEditVariableError {
     /// The specified variable was not an edit variable in the solver, so cannot be removed.
+    #[error("Edit variable not in solver")]
     UnknownEditVariable,
     /// The solver entered an invalid state. If this occurs please report the issue. This variant specifies
     /// additional details as a string.
+    #[error("Internal solver error: {0}")]
     InternalSolverError(&'static str),
 }
 
 /// The possible error conditions that `Solver::suggest_value` can fail with.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
 pub enum SuggestValueError {
     /// The specified variable was not an edit variable in the solver, so cannot have its value suggested.
+    #[error("Edit variable not in solver")]
     UnknownEditVariable,
     /// The solver entered an invalid state. If this occurs please report the issue. This variant specifies
     /// additional details as a string.
+    #[error("Internal solver error: {0}")]
     InternalSolverError(&'static str),
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Error)]
+#[error("Internal solver error:{0}")]
 pub struct InternalSolverError(&'static str);
 
 pub use solver_impl::Solver;
