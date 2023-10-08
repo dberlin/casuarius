@@ -13,6 +13,6 @@ license = "MIT / Apache-2.0"
 keywords = ["constraint", "simplex", "user", "interface", "layout"]
 
 [dependencies]
-ordered-float = "^1.0"
+ordered-float = "^4.1"
 rustc-hash = "^1.1"
 thiserror = "^1.0.49"
